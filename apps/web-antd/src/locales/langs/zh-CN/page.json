@@ -99,5 +99,14 @@
       "service": "服务",
       "system": "系统"
     }
+  },
+  "lottery": {
+    "title": "彩票管理",
+    "lotteryType": "彩种管理",
+    "drawResult": "开奖数据",
+    "analysisMethod": "分析方法",
+    "combination": "组合管理",
+    "prediction": "预测管理",
+    "membership": "会员管理"
   }
 }
