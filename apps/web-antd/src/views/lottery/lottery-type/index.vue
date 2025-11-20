@@ -209,7 +209,12 @@ async function handleBatchDelete() {
 </script>
 
 <template>
-  <Page auto-content-height  class="h-full" content-class="flex flex-col" :content-padding="16">
+  <Page
+    auto-content-height
+    class="h-full"
+    content-class="flex flex-col"
+    :content-padding="16"
+  >
     <Grid>
       <template #toolbar-actions>
         <VbenButton @click="handleAdd">
