@@ -8,7 +8,7 @@ import type {
 
 import { ref } from 'vue';
 
-import { useVbenModal, VbenButton } from '@vben/common-ui';
+import { Page, useVbenModal, VbenButton } from '@vben/common-ui';
 import { MaterialSymbolsAdd } from '@vben/icons';
 import { $t } from '@vben/locales';
 
@@ -209,7 +209,7 @@ async function handleBatchDelete() {
 </script>
 
 <template>
-  <ColPage class="h-full" content-class="flex flex-col" :content-padding="16">
+  <Page auto-content-height  class="h-full" content-class="flex flex-col" :content-padding="16">
     <Grid>
       <template #toolbar-actions>
         <VbenButton @click="handleAdd">
@@ -239,5 +239,5 @@ async function handleBatchDelete() {
       </template>
     </Grid>
     <Modal />
-  </ColPage>
+  </Page>
 </template>
