@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import type { VbenFormProps } from '@vben/common-ui';
 import type { VxeTableGridOptions, OnActionClickParams } from '#/adapter/vxe-table';
-import type { LlmModelConfigResult, LlmModelConfigCreateParams, LlmProviderResult } from '#/api';
+import type { LlmModelConfigResult, LlmModelConfigCreateParams } from '#/api';
 
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 import { Page, useVbenModal, VbenButton } from '@vben/common-ui';
 import { MaterialSymbolsAdd } from '@vben/icons';
 import { $t } from '@vben/locales';
@@ -16,19 +16,8 @@ import {
   createLlmModelApi,
   updateLlmModelApi,
   deleteLlmModelApi,
-  getLlmProviderListApi,
 } from '#/api';
 import { querySchema, useColumns, useFormSchema } from './data';
-
-const providerOptions = ref<LlmProviderResult[]>([]);
-
-const fetchProviders = async () => {
-  try {
-    providerOptions.value = await getLlmProviderListApi({ enabled: true });
-  } catch (error) {
-    console.error(error);
-  }
-};
 
 const formOptions: VbenFormProps = {
   collapsed: true,
@@ -88,7 +77,7 @@ function onActionClick({ code, row }: OnActionClickParams<LlmModelConfigResult>)
 
 const [EditForm, editFormApi] = useVbenForm({
   showDefaultActions: false,
-  schema: useFormSchema(providerOptions),
+  schema: useFormSchema(),
 });
 
 const [editModal, editModalApi] = useVbenModal({
@@ -121,7 +110,7 @@ const [editModal, editModalApi] = useVbenModal({
 
 const [AddForm, addFormApi] = useVbenForm({
   showDefaultActions: false,
-  schema: useFormSchema(providerOptions),
+  schema: useFormSchema(),
 });
 
 const [addModal, addModalApi] = useVbenModal({
@@ -146,10 +135,6 @@ const [addModal, addModalApi] = useVbenModal({
       addFormApi.resetForm();
     }
   },
-});
-
-onMounted(() => {
-  fetchProviders();
 });
 </script>
 

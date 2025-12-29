@@ -10,6 +10,8 @@ import type { Ref } from 'vue';
 
 import { $t } from '@vben/locales';
 
+import { updateLlmModelGroupApi } from '#/api';
+
 import { MODEL_TYPES } from '../model/data';
 
 export const querySchema: VbenFormSchema[] = [
@@ -69,14 +71,20 @@ export function useColumns(
     {
       field: 'fallback_enabled',
       title: '故障转移',
-      width: 90,
+      width: 100,
       cellRender: {
-        name: 'CellTag',
+        name: 'CellSwitch',
         props: {
-          color: (row: LlmModelGroupResult) =>
-            row.fallback_enabled ? 'green' : 'default',
-          content: (row: LlmModelGroupResult) =>
-            row.fallback_enabled ? '启用' : '禁用',
+          checkedValue: true,
+          unCheckedValue: false,
+          checkedChildren: '启用',
+          unCheckedChildren: '禁用',
+        },
+        attrs: {
+          beforeChange: async (newVal: boolean, row: LlmModelGroupResult) => {
+            await updateLlmModelGroupApi(row.id, { fallback_enabled: newVal });
+            return true;
+          },
         },
       },
     },
@@ -85,13 +93,20 @@ export function useColumns(
     {
       field: 'enabled',
       title: '状态',
-      width: 80,
+      width: 100,
       cellRender: {
-        name: 'CellTag',
+        name: 'CellSwitch',
         props: {
-          color: (row: LlmModelGroupResult) => (row.enabled ? 'green' : 'red'),
-          content: (row: LlmModelGroupResult) =>
-            row.enabled ? '启用' : '禁用',
+          checkedValue: true,
+          unCheckedValue: false,
+          checkedChildren: '启用',
+          unCheckedChildren: '禁用',
+        },
+        attrs: {
+          beforeChange: async (newVal: boolean, row: LlmModelGroupResult) => {
+            await updateLlmModelGroupApi(row.id, { enabled: newVal });
+            return true;
+          },
         },
       },
     },

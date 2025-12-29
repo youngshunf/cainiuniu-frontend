@@ -213,19 +213,12 @@ setupVbenVxeTable({
           return h(
             Popconfirm,
             {
-              getPopupContainer(el) {
-                if (el.closest('.fixed-right--wrapper')) {
-                  return document.body;
-                }
-                return (
-                  el
-                    .closest('.vxe-table--viewport-wrapper')
-                    ?.querySelector('.vxe-table--main-wrapper')
-                    ?.querySelector('tbody') || document.body
-                );
-              },
+              getPopupContainer: () => document.body,
               placement: 'topLeft',
               title: $t('ui.actionTitle.delete', [attrs?.nameTitle || '']),
+              description: $t('ui.actionMessage.deleteConfirm', [
+                row[attrs?.nameField || 'name'],
+              ]),
               ...props,
               ...opt,
               icon: undefined,
@@ -236,17 +229,7 @@ setupVbenVxeTable({
                 });
               },
             },
-            {
-              default: () => renderBtn({ ...opt }, false),
-              description: () =>
-                h(
-                  'div',
-                  { class: 'truncate' },
-                  $t('ui.actionMessage.deleteConfirm', [
-                    row[attrs?.nameField || 'name'],
-                  ]),
-                ),
-            },
+            { default: () => renderBtn({ ...opt }, false) },
           );
         }
 

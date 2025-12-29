@@ -2,9 +2,9 @@ import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeGridProps } from '#/adapter/vxe-table';
 import type { LlmModelConfigResult, LlmProviderResult } from '#/api';
 
-import type { Ref } from 'vue';
-
 import { $t } from '@vben/locales';
+
+import { getLlmProviderListApi, updateLlmModelApi } from '#/api';
 
 export const MODEL_TYPES = [
   { label: '文本生成', value: 'TEXT' },
@@ -87,12 +87,20 @@ export function useColumns(
     {
       field: 'enabled',
       title: '状态',
-      width: 80,
+      width: 100,
       cellRender: {
-        name: 'CellTag',
+        name: 'CellSwitch',
         props: {
-          color: (row: LlmModelConfigResult) => (row.enabled ? 'green' : 'red'),
-          content: (row: LlmModelConfigResult) => (row.enabled ? '启用' : '禁用'),
+          checkedValue: true,
+          unCheckedValue: false,
+          checkedChildren: '启用',
+          unCheckedChildren: '禁用',
+        },
+        attrs: {
+          beforeChange: async (newVal: boolean, row: LlmModelConfigResult) => {
+            await updateLlmModelApi(row.id, { enabled: newVal });
+            return true;
+          },
         },
       },
     },
@@ -114,18 +122,18 @@ export function useColumns(
   ];
 }
 
-export function useFormSchema(
-  providerOptions: Ref<LlmProviderResult[]>,
-): VbenFormSchema[] {
+export function useFormSchema(): VbenFormSchema[] {
   return [
     {
-      component: 'Select',
+      component: 'ApiSelect',
       fieldName: 'provider_id',
       label: '供应商',
       rules: 'selectRequired',
       componentProps: {
-        options: providerOptions,
-        fieldNames: { label: 'name', value: 'id' },
+        api: () => getLlmProviderListApi({ enabled: true }),
+        afterFetch: (data: { items: LlmProviderResult[] }) => data.items,
+        labelField: 'name',
+        valueField: 'id',
         class: 'w-full',
       },
     },

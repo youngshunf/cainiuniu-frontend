@@ -8,6 +8,8 @@ import type { LlmRateLimitResult } from '#/api';
 
 import { $t } from '@vben/locales';
 
+import { updateLlmRateLimitApi } from '#/api';
+
 export const querySchema: VbenFormSchema[] = [
   {
     component: 'Input',
@@ -64,13 +66,20 @@ export function useColumns(
     {
       field: 'enabled',
       title: '状态',
-      width: 80,
+      width: 100,
       cellRender: {
-        name: 'CellTag',
+        name: 'CellSwitch',
         props: {
-          color: (row: LlmRateLimitResult) => (row.enabled ? 'green' : 'red'),
-          content: (row: LlmRateLimitResult) =>
-            row.enabled ? '启用' : '禁用',
+          checkedValue: true,
+          unCheckedValue: false,
+          checkedChildren: '启用',
+          unCheckedChildren: '禁用',
+        },
+        attrs: {
+          beforeChange: async (newVal: boolean, row: LlmRateLimitResult) => {
+            await updateLlmRateLimitApi(row.id, { enabled: newVal });
+            return true;
+          },
         },
       },
     },

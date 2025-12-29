@@ -7,11 +7,42 @@ import type { LlmProviderResult } from '#/api';
 
 import { $t } from '@vben/locales';
 
+import { updateLlmProviderApi } from '#/api';
+
+// 供应商类型选项（决定 API 接口格式）
+export const PROVIDER_TYPES = [
+  { label: 'OpenAI', value: 'openai' },
+  { label: 'Anthropic', value: 'anthropic' },
+  { label: 'Azure OpenAI', value: 'azure' },
+  { label: 'AWS Bedrock', value: 'bedrock' },
+  { label: 'Google Vertex AI', value: 'vertex_ai' },
+  { label: 'Google Gemini', value: 'gemini' },
+  { label: 'Cohere', value: 'cohere' },
+  { label: 'Mistral AI', value: 'mistral' },
+  { label: 'DeepSeek', value: 'deepseek' },
+  { label: '智谱 AI', value: 'zhipu' },
+  { label: '通义千问', value: 'qwen' },
+  { label: 'Moonshot (Kimi)', value: 'moonshot' },
+  { label: '百川', value: 'baichuan' },
+  { label: 'MiniMax', value: 'minimax' },
+  { label: 'Ollama', value: 'ollama' },
+];
+
 export const querySchema: VbenFormSchema[] = [
   {
     component: 'Input',
     fieldName: 'name',
     label: '供应商名称',
+  },
+  {
+    component: 'Select',
+    componentProps: {
+      allowClear: true,
+      options: PROVIDER_TYPES,
+      placeholder: $t('common.form.select'),
+    },
+    fieldName: 'provider_type',
+    label: '供应商类型',
   },
   {
     component: 'Select',
@@ -33,19 +64,36 @@ export function useColumns(
 ): VxeGridProps['columns'] {
   return [
     { field: 'seq', title: '#', type: 'seq', width: 50 },
-    { field: 'name', title: '供应商名称', width: 120 },
+    { field: 'name', title: '供应商名称', width: 150 },
+    {
+      field: 'provider_type',
+      title: '供应商类型',
+      width: 120,
+      formatter({ cellValue }) {
+        const type = PROVIDER_TYPES.find((t) => t.value === cellValue);
+        return type?.label || cellValue;
+      },
+    },
     { field: 'api_base_url', title: 'API Base URL', minWidth: 200, showOverflow: true },
     { field: 'global_rpm_limit', title: 'RPM 限制', width: 100 },
     { field: 'global_tpm_limit', title: 'TPM 限制', width: 100 },
     {
       field: 'is_domestic',
       title: '国内供应商',
-      width: 100,
+      width: 110,
       cellRender: {
-        name: 'CellTag',
+        name: 'CellSwitch',
         props: {
-          color: (row: LlmProviderResult) => (row.is_domestic ? 'green' : 'blue'),
-          content: (row: LlmProviderResult) => (row.is_domestic ? '是' : '否'),
+          checkedValue: true,
+          unCheckedValue: false,
+          checkedChildren: '是',
+          unCheckedChildren: '否',
+        },
+        attrs: {
+          beforeChange: async (newVal: boolean, row: LlmProviderResult) => {
+            await updateLlmProviderApi(row.id, { is_domestic: newVal });
+            return true;
+          },
         },
       },
     },
@@ -64,12 +112,20 @@ export function useColumns(
     {
       field: 'enabled',
       title: '状态',
-      width: 80,
+      width: 100,
       cellRender: {
-        name: 'CellTag',
+        name: 'CellSwitch',
         props: {
-          color: (row: LlmProviderResult) => (row.enabled ? 'green' : 'red'),
-          content: (row: LlmProviderResult) => (row.enabled ? '启用' : '禁用'),
+          checkedValue: true,
+          unCheckedValue: false,
+          checkedChildren: '启用',
+          unCheckedChildren: '禁用',
+        },
+        attrs: {
+          beforeChange: async (newVal: boolean, row: LlmProviderResult) => {
+            await updateLlmProviderApi(row.id, { enabled: newVal });
+            return true;
+          },
         },
       },
     },
@@ -98,6 +154,20 @@ export const formSchema: VbenFormSchema[] = [
     fieldName: 'name',
     label: '供应商名称',
     rules: 'required',
+    componentProps: {
+      placeholder: '自定义名称，如：Anthropic 官方、Claude AWS',
+    },
+  },
+  {
+    component: 'Select',
+    fieldName: 'provider_type',
+    label: '供应商类型',
+    rules: 'selectRequired',
+    componentProps: {
+      options: PROVIDER_TYPES,
+      class: 'w-full',
+      placeholder: '选择 API 接口格式',
+    },
   },
   {
     component: 'Input',

@@ -328,8 +328,18 @@ export async function deleteLlmRateLimitApi(pk: number) {
 
 // ==================== API Key API ====================
 
-export async function getLlmApiKeyListApi() {
-  return requestClient.get<LlmApiKeyResult[]>('/api/v1/llm/api-keys');
+export interface LlmApiKeyParams {
+  user_id?: number;
+  name?: string;
+  status?: string;
+  page?: number;
+  size?: number;
+}
+
+export async function getLlmApiKeyListApi(params?: LlmApiKeyParams) {
+  return requestClient.get<LlmApiKeyResult[]>('/api/v1/llm/api-keys/admin', {
+    params,
+  });
 }
 
 export async function getLlmApiKeyApi(pk: number) {
